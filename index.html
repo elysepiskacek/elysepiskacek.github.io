@@ -224,7 +224,9 @@ dialog::backdrop{background:rgba(20,33,61,.55)}
 /* EDIT HERE. Projects run earliest to latest.
    "media" = photos and videos (first item is the card cover), e.g. media:["images/a.png","images/demo.mp4"].
    "models" = interactive 3D files (.stl or .glb) in the models/ folder, e.g. models:[{label:"Assembly",file:"models/part.stl"}].
-   Several models = tabs inside the 3D viewer. All STL models are light grey (change the colour near the bottom of the file). */
+   Several models = tabs inside the 3D viewer. All STL models are light grey (change the colour near the bottom of the file).
+   Optional "flip" turns a model to fix its starting orientation, in degrees [x,y,z].
+   Example: flip:[180,0,0] turns it upside down. If that isn't right, try [0,0,180] or [0,180,0]. */
 const projects=[
  {title:"Femoral Fracture Fixation Plate",when:"Sept to Nov 2025 · Biomechanics design course",tags:["Biomechanics","FEA","Orthopedics"],
   short:"A C-shaped double plate that lets elderly patients bear full weight right after surgery.",
@@ -243,7 +245,7 @@ const projects=[
  {title:"HPV Urine Collection Device",when:"Nov 2025 to present · Engineers Without Borders, ACCESS",tags:["Global health","Prototyping","Silicone"],
   short:"A low-cost device that captures the first urine stream for HPV self-testing, fitted to female anatomy.",
   media:["images/hpv-print.jpg"],
-  models:[{label:"Device",file:"models/hpv-device.stl"},{label:"Mold: top",file:"models/hpv-mold-top.stl"},{label:"Mold: bottom",file:"models/hpv-mold-bottom.stl"}],
+  models:[{label:"Device",file:"models/hpv-device.stl",flip:[180,0,0]},{label:"Mold: top",file:"models/hpv-mold-top.stl"},{label:"Mold: bottom",file:"models/hpv-mold-bottom.stl"}],
   problem:"In parts of Sub-Saharan Africa, cervical cancer screening is limited by infrastructure. Urine-based HPV testing works best on the first stream, which many devices built for male anatomy miss.",
   design:["Oval inlet that rests against the body and guides positioning","Overflow outlet so the user doesn't need to stop mid-stream","Internal ribbing that directs the first stream into the tube","Fits a standard 50 mL Falcon tube","Two-part mold (top and bottom) for casting the device in silicone"],
   outcome:"Built PLA and silicone prototypes and iterated the design using water-based tests of the collection mechanism."},
@@ -286,7 +288,7 @@ projects.forEach(p=>{
     show(0);
     $("dtitle").textContent=p.title;$("dwhen").textContent=p.when;$("dtags").innerHTML=tags(p.tags);
     $("dprob").textContent=p.problem;$("ddes").innerHTML=p.design.map(d=>`<li>${d}</li>`).join("");$("dout").textContent=p.outcome;
-    $("dlg").showModal();$("dbody")&&0;document.querySelector(".dbody").scrollTop=0;
+    $("dlg").showModal();document.querySelector(".dbody").scrollTop=0;
   };
   $("grid").appendChild(b);
 });
@@ -348,6 +350,7 @@ async function load(m){
       if(!g.attributes.position||g.attributes.position.count===0)throw new Error("the file downloaded but contains no 3D geometry");
       obj=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:m.color||MODEL_COLOR,metalness:.1,roughness:.45}));
     }else obj=(await new GLTFLoader().parseAsync(buf,"")).scene;
+    if(m.flip)obj.rotation.set(...m.flip.map(d=>d*Math.PI/180)); /* orientation fix from the "flip" setting */
     const b=new THREE.Box3().setFromObject(obj),c=b.getCenter(new THREE.Vector3()),size=b.getSize(new THREE.Vector3()).length();
     if(!isFinite(size)||size===0)throw new Error("the model has no measurable size");
     obj.position.sub(c);cur=new THREE.Group();cur.add(obj);S.add(cur);
