@@ -291,26 +291,39 @@ function init(){
 }
 function fit(){const w=box.clientWidth,h=box.clientHeight;if(!w||!h)return;R.setSize(w,h,false);C.aspect=w/h;C.updateProjectionMatrix()}
 function loop(){if(!run)return;raf=requestAnimationFrame(loop);K.update();R.render(S,C)}
-async function fetchModel(file,loader){
+
+/* Downloads the file, trying the name as written and then with an uppercase extension (.STL). */
+async function getBuf(file){
   const alt=file.replace(/\.(\w+)$/,(x,e)=>"."+e.toUpperCase());
-  try{return await loader.loadAsync(file)}catch(e){if(alt===file)throw e;return await loader.loadAsync(alt)}
+  let last="";
+  for(const u of [...new Set([file,alt])]){
+    try{
+      const r=await fetch(u);
+      if(!r.ok){last=u+" returned HTTP "+r.status;continue}
+      return await r.arrayBuffer();
+    }catch(e){last="could not download "+u+" ("+e.message+")"}
+  }
+  throw new Error(last);
 }
 async function load(m){
   const my=++token;msg.style.display="grid";msg.textContent="Loading 3D model…";
   if(cur){S.remove(cur);cur=null}
   try{
+    const buf=await getBuf(m.file);
+    if(my!==token)return;
     const ext=m.file.split(".").pop().toLowerCase();let obj;
     if(ext==="stl"){
-      const g=await fetchModel(m.file,new STLLoader());
+      const g=new STLLoader().parse(buf);
+      if(!g.attributes.position||g.attributes.position.count===0)throw new Error("the file downloaded but contains no 3D geometry");
       obj=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:m.color||"#13877F",metalness:.15,roughness:.5}));
-    }else obj=(await fetchModel(m.file,new GLTFLoader())).scene;
-    if(my!==token)return;
+    }else obj=(await new GLTFLoader().parseAsync(buf,"")).scene;
     const b=new THREE.Box3().setFromObject(obj),c=b.getCenter(new THREE.Vector3()),size=b.getSize(new THREE.Vector3()).length();
+    if(!isFinite(size)||size===0)throw new Error("the model has no measurable size");
     obj.position.sub(c);cur=new THREE.Group();cur.add(obj);S.add(cur);
     C.near=size/100;C.far=size*20;C.updateProjectionMatrix();
     C.position.set(size*.7,size*.5,size*.9);K.target.set(0,0,0);K.minDistance=size*.2;K.maxDistance=size*4;K.autoRotate=true;K.update();
     msg.style.display="none";
-  }catch(e){if(my===token)msg.textContent="Couldn't load "+m.file+". Check the file name and that it's in the models folder."}
+  }catch(e){if(my===token)msg.textContent="Couldn't load "+m.file+": "+(e&&e.message?e.message:e)}
 }
 window.view3D={
   start(models,tabs){
