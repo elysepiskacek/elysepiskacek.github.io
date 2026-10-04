@@ -6,6 +6,7 @@
 <title>Elyse Piskacek | Biomedical Engineering</title>
 <meta name="description" content="Portfolio of Elyse Piskacek, UBC biomedical engineering student focused on biomechanics and medical device design.">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <style>
 :root{--bg:#F3F6F8;--card:#fff;--ink:#14213D;--muted:#56637A;--line:#D9E1E8;--teal:#13877F;--tealsoft:#D8F0ED;--coral:#F26B5B;--coralsoft:#FDE4E0;
 --head:'Bricolage Grotesque',system-ui,sans-serif;--body:'Source Sans 3',system-ui,sans-serif}
@@ -52,6 +53,7 @@ h2{font:700 clamp(28px,4vw,36px)/1.1 var(--head);margin:0 0 8px;letter-spacing:-
 .pbody p.s{margin:0 0 12px;font-size:16px;color:var(--ink)}
 .tags{display:flex;gap:6px;flex-wrap:wrap}
 .tag{font-size:13px;font-weight:600;padding:2px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+.tag.three{background:var(--tealsoft);border-color:#A9DDD8;color:#0B5F59}
 .award{background:var(--coralsoft);border-color:#F6BDB5}
 .hint{font-size:15px;color:var(--muted);margin-top:14px}
 .team{background:var(--card);border:1px solid var(--line);border-radius:26px;padding:32px;display:grid;grid-template-columns:1.5fr 1fr;gap:32px}
@@ -74,10 +76,19 @@ h2{font:700 clamp(28px,4vw,36px)/1.1 var(--head);margin:0 0 8px;letter-spacing:-
 footer{text-align:center;color:var(--muted);font-size:15px;padding-bottom:32px}
 dialog{border:0;border-radius:24px;padding:0;max-width:760px;width:92vw;max-height:92vh;color:var(--ink);background:var(--card)}
 dialog::backdrop{background:rgba(20,33,61,.55)}
-.close{position:absolute;right:14px;top:14px;z-index:1;cursor:pointer;background:#fff;border:1px solid var(--line);border-radius:999px;width:38px;height:38px;font-size:20px}
+.close{position:absolute;right:14px;top:14px;z-index:3;cursor:pointer;background:#fff;border:1px solid var(--line);border-radius:999px;width:38px;height:38px;font-size:20px}
 #dmedia{aspect-ratio:16/9;border-radius:0}
+#dmedia[hidden],#d3d[hidden],#mtabs[hidden]{display:none}
+#d3d{aspect-ratio:16/9;position:relative;background:radial-gradient(circle at 50% 40%,#fff 0%,#E6EEF2 100%);cursor:grab;touch-action:none}
+#d3d:active{cursor:grabbing}
+#d3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#dmsg{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:16px;pointer-events:none;text-align:center;padding:20px}
+#dhint{position:absolute;left:14px;bottom:10px;font-size:13px;color:var(--muted);pointer-events:none}
+#mtabs{display:flex;gap:8px;padding:12px 28px 0;flex-wrap:wrap}
+#mtabs button{cursor:pointer;font:600 14px var(--body);padding:5px 14px;border-radius:999px;border:2px solid var(--line);background:#fff;color:var(--ink)}
+#mtabs button[aria-pressed=true]{border-color:var(--teal);background:var(--tealsoft)}
 .strip{display:flex;gap:8px;padding:10px 28px 0;overflow-x:auto}
-.strip button{all:unset;cursor:pointer;width:72px;height:52px;border:2px solid var(--line);border-radius:10px;background:#fff;overflow:hidden;flex:none}
+.strip button{all:unset;cursor:pointer;min-width:72px;height:52px;border:2px solid var(--line);border-radius:10px;background:#fff;overflow:hidden;flex:none;display:grid;place-items:center;font:700 14px var(--head);color:var(--teal)}
 .strip button[aria-current=true]{border-color:var(--teal)}
 .strip img{width:100%;height:100%;object-fit:contain}
 .dbody{padding:18px 28px 28px}
@@ -130,7 +141,7 @@ dialog::backdrop{background:rgba(20,33,61,.55)}
 
 <section id="projects">
   <h2>Projects</h2>
-  <p class="sub">Select a project for images and details.</p>
+  <p class="sub">Select a project for images and details. Projects tagged 3D have interactive CAD you can rotate.</p>
   <div class="grid" id="grid"></div>
 </section>
 
@@ -181,6 +192,8 @@ dialog::backdrop{background:rgba(20,33,61,.55)}
 <dialog id="dlg" aria-labelledby="dtitle">
   <button class="close" aria-label="Close project" id="x">&times;</button>
   <div class="thumb" id="dmedia"></div>
+  <div id="d3d" hidden><div id="dmsg">Loading 3D model…</div><div id="dhint">Drag to rotate · scroll or pinch to zoom · right-drag to pan</div></div>
+  <div id="mtabs" hidden></div>
   <div class="strip" id="strip"></div>
   <div class="dbody">
     <h3 id="dtitle"></h3><p class="when" id="dwhen"></p><div class="tags" id="dtags"></div>
@@ -191,29 +204,36 @@ dialog::backdrop{background:rgba(20,33,61,.55)}
 </dialog>
 
 <script>
-/* EDIT HERE. Projects run earliest to latest. Each "media" list holds file paths: photos and videos both go in this list, e.g. media:["images/a.png","images/demo.mp4"]. The first item is the card cover. */
+/* EDIT HERE. Projects run earliest to latest.
+   "media" = photos and videos (first item is the card cover), e.g. media:["images/a.png","images/demo.mp4"].
+   "models" = interactive 3D files (.stl or .glb) in the models/ folder, e.g. models:[{label:"Assembly",file:"models/part.stl",color:"#13877F"}].
+   Several models = tabs above the viewer. Models are optional. */
 const projects=[
  {title:"Femoral Fracture Fixation Plate",when:"Sept to Nov 2025 · Biomechanics design course",tags:["Biomechanics","FEA","Orthopedics"],
   short:"A C-shaped double plate that lets elderly patients bear full weight right after surgery.",
   media:["images/femoral-plate.png","images/femoral-fea.png","images/femoral-drawing.png"],
+  models:[{label:"Fixation plate",file:"models/femoral-plate.stl",color:"#13877F"}],
   problem:"Elderly femoral fractures are fixed with plates and screws, but standard fixation can limit early weight bearing, which slows recovery and raises the risk of complications.",
   design:["C-shaped plate for minimally invasive double plating along the femur","Better load sharing across the fracture site","Higher stability with less disruption to surrounding tissue"],
   outcome:"Finite element analysis showed the plate could support full weight-bearing loads. Selected as the top project in the course by VGH trauma surgeon Dr. Pierre Guy."},
  {title:"Finger Physio Stretching Device",when:"Sept 2025 to July 2026 · ENABLE, for Technology for Living",tags:["Assistive tech","Mechanisms","SolidWorks"],
   short:"A motorized device that stretches a client's fingers so he can do daily physio on his own.",
-  media:["images/finger-iso.jpg","images/finger-top.jpg","images/finger-mechanism.png","images/finger-demo.mp4"],
+  media:["images/finger-iso.jpg","images/finger-top.jpg","images/finger-demo.mp4"],
+  models:[{label:"Full assembly",file:"models/finger-assembly.stl",color:"#13877F"}],
   problem:"Our client has quadriplegia and needs daily manual stretching to prevent muscle atrophy and keep neural mapping to each finger. It currently needs a physiotherapist and can't be done independently.",
   design:["Custom lofted hand platform modeled on the client's hand","Finger platforms on U-joints for abduction, adduction, and transverse motion","Worm gear for controlled vertical stretching","Stepper-motor actuators linked through U-joints for smooth movement"],
   outcome:"Designed the full modular system in SolidWorks and built a single-finger prototype to test the up-and-down stretching motion."},
  {title:"HPV Urine Collection Device",when:"Nov 2025 to present · Engineers Without Borders, ACCESS",tags:["Global health","Prototyping","Silicone"],
   short:"A low-cost device that captures the first urine stream for HPV self-testing, fitted to female anatomy.",
-  media:["images/hpv-print.jpg","images/hpv-cad-side.png","images/hpv-cad-inlet.png"],
+  media:["images/hpv-print.jpg"],
+  models:[{label:"Device",file:"models/hpv-device.stl",color:"#13877F"},{label:"Mold: top",file:"models/hpv-mold-top.stl",color:"#F26B5B"},{label:"Mold: bottom",file:"models/hpv-mold-bottom.stl",color:"#14213D"}],
   problem:"In parts of Sub-Saharan Africa, cervical cancer screening is limited by infrastructure. Urine-based HPV testing works best on the first stream, which many devices built for male anatomy miss.",
-  design:["Oval inlet that rests against the body and guides positioning","Overflow outlet so the user doesn't need to stop mid-stream","Internal ribbing that directs the first stream into the tube","Fits a standard 50 mL Falcon tube"],
+  design:["Oval inlet that rests against the body and guides positioning","Overflow outlet so the user doesn't need to stop mid-stream","Internal ribbing that directs the first stream into the tube","Fits a standard 50 mL Falcon tube","Two-part mold (top and bottom) for casting the device in silicone"],
   outcome:"Built PLA and silicone prototypes and iterated the design using water-based tests of the collection mechanism."},
  {title:"Neonatal Measuring Device",when:"May to Sept 2026 · BC Children's Hospital",tags:["Medical device","CAD","3D printing"],
   short:"A caliper-style device that measures infant length in an incubator without lifting the baby.",
-  media:["images/nicu-prototype.jpg","images/nicu-top.jpg","images/nicu-cad.png" /* NICU VIDEO SPOT: to add it later, type ,"images/nicu-demo.mp4" here, just before the closing bracket */],
+  media:["images/nicu-prototype.jpg","images/nicu-top.jpg" /* NICU VIDEO SPOT: to add it later, type ,"images/nicu-demo.mp4" here, just before the closing bracket */],
+  models:[{label:"Measuring device",file:"models/nicu-device.stl",color:"#13877F"}],
   problem:"Measuring NICU infants on a length board means lifting and repositioning medically fragile babies. The hospital wanted fewer movements, accurate results, and a tool one clinician could use alone.",
   design:["Caliper-style mechanism that fits around the baby","Telescoping body, adjustable and compact to store","Guarded measuring tape with a safety latch","Weight-stabilized headrest; open surfaces for easy cleaning"],
   outcome:"I 3D printed and assembled a physical prototype, which a BC Children's Hospital researcher is using in an ongoing study comparing infant measurement methods."}
@@ -222,19 +242,25 @@ const skills={"CAD and design":["SolidWorks","Onshape","Medical device design"],
 const $=id=>document.getElementById(id),isVid=s=>/\.(mp4|webm|mov)$/i.test(s);
 const tags=a=>a.map(t=>`<span class="tag">${t}</span>`).join("");
 $("skillgrid").innerHTML=Object.entries(skills).map(([k,v])=>`<div class="card"><h3>${k}</h3>${tags(v)}</div>`).join("");
-function show(p,i){
-  const m=p.media[i];
-  $("dmedia").innerHTML=isVid(m)?`<video src="${m}" controls playsinline preload="metadata"></video>`:`<img src="${m}" alt="${p.title}, view ${i+1}">`;
+
+/* items = [3D button (if the project has models)] + photos/videos */
+function show(p,items,i){
+  const it=items[i],is3d=it==="3d";
+  $("dmedia").hidden=is3d;$("d3d").hidden=!is3d;$("mtabs").hidden=!(is3d&&p.models.length>1);
+  if(is3d){window.view3D&&window.view3D.start(p.models,$("mtabs"));}
+  else{window.view3D&&window.view3D.stop();
+    $("dmedia").innerHTML=isVid(it)?`<video src="${it}" controls playsinline preload="metadata"></video>`:`<img src="${it}" alt="${p.title}, view ${i+1}">`;}
   [...$("strip").children].forEach((b,j)=>b.setAttribute("aria-current",j===i));
 }
 projects.forEach(p=>{
   const b=document.createElement("button");b.className="proj";
   b.innerHTML=`<div class="thumb">${isVid(p.media[0])?"Video":`<img src="${p.media[0]}" alt="">`}</div>
-  <div class="pbody"><h3>${p.title}</h3><p class="when">${p.when}</p><p class="s">${p.short}</p><div class="tags">${p.tags.map((t,i)=>`<span class="tag${p.award&&i==2?" award":""}">${t}</span>`).join("")}</div></div>`;
+  <div class="pbody"><h3>${p.title}</h3><p class="when">${p.when}</p><p class="s">${p.short}</p><div class="tags">${p.tags.map((t,i)=>`<span class="tag${p.award&&i==2?" award":""}">${t}</span>`).join("")}${p.models?'<span class="tag three">3D</span>':""}</div></div>`;
   b.onclick=()=>{
-    $("strip").innerHTML=p.media.length>1?p.media.map((m,i)=>`<button aria-label="View ${i+1}">${isVid(m)?"▶":`<img src="${m}" alt="">`}</button>`).join(""):"";
-    [...$("strip").children].forEach((bt,i)=>bt.onclick=()=>show(p,i));
-    show(p,0);
+    const items=(p.models?["3d"]:[]).concat(p.media);
+    $("strip").innerHTML=items.length>1?items.map((m,i)=>`<button aria-label="${m==="3d"?"Interactive 3D model":"View "+i}">${m==="3d"?"3D":isVid(m)?"▶":`<img src="${m}" alt="">`}</button>`).join(""):"";
+    [...$("strip").children].forEach((bt,i)=>bt.onclick=()=>show(p,items,i));
+    show(p,items,0);
     $("dtitle").textContent=p.title;$("dwhen").textContent=p.when;$("dtags").innerHTML=tags(p.tags);
     $("dprob").textContent=p.problem;$("ddes").innerHTML=p.design.map(d=>`<li>${d}</li>`).join("");$("dout").textContent=p.outcome;
     $("dlg").showModal();
@@ -243,7 +269,54 @@ projects.forEach(p=>{
 });
 $("x").onclick=()=>$("dlg").close();
 $("dlg").addEventListener("click",e=>{if(e.target===$("dlg"))$("dlg").close()});
-$("dlg").addEventListener("close",()=>{$("dmedia").innerHTML=""});
+$("dlg").addEventListener("close",()=>{$("dmedia").innerHTML="";window.view3D&&window.view3D.stop()});
+</script>
+
+<script type="module">
+import * as THREE from "three";
+import {OrbitControls} from "three/addons/controls/OrbitControls.js";
+import {STLLoader} from "three/addons/loaders/STLLoader.js";
+import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
+const box=document.getElementById("d3d"),msg=document.getElementById("dmsg");
+let R,S,C,K,cur=null,raf=0,run=false,token=0,ro;
+function init(){
+  R=new THREE.WebGLRenderer({antialias:true,alpha:true});R.setPixelRatio(Math.min(devicePixelRatio,2));
+  box.insertBefore(R.domElement,box.firstChild);
+  S=new THREE.Scene();C=new THREE.PerspectiveCamera(40,1,.1,1e5);
+  S.add(new THREE.HemisphereLight(0xffffff,0x8899aa,1.8));
+  const d=new THREE.DirectionalLight(0xffffff,2.2);d.position.set(2,3,4);C.add(d);S.add(C);
+  K=new OrbitControls(C,R.domElement);K.enableDamping=true;K.autoRotate=true;K.autoRotateSpeed=1.5;
+  K.addEventListener("start",()=>K.autoRotate=false);
+  ro=new ResizeObserver(fit);ro.observe(box);
+}
+function fit(){const w=box.clientWidth,h=box.clientHeight;if(!w||!h)return;R.setSize(w,h,false);C.aspect=w/h;C.updateProjectionMatrix()}
+function loop(){if(!run)return;raf=requestAnimationFrame(loop);K.update();R.render(S,C)}
+async function load(m){
+  const my=++token;msg.style.display="grid";msg.textContent="Loading 3D model…";
+  if(cur){S.remove(cur);cur=null}
+  try{
+    const ext=m.file.split(".").pop().toLowerCase();let obj;
+    if(ext==="stl"){
+      const g=await new STLLoader().loadAsync(m.file);
+      obj=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:m.color||"#13877F",metalness:.15,roughness:.5}));
+    }else obj=(await new GLTFLoader().loadAsync(m.file)).scene;
+    if(my!==token)return;
+    const b=new THREE.Box3().setFromObject(obj),c=b.getCenter(new THREE.Vector3()),size=b.getSize(new THREE.Vector3()).length();
+    obj.position.sub(c);cur=new THREE.Group();cur.add(obj);S.add(cur);
+    C.near=size/100;C.far=size*20;C.updateProjectionMatrix();
+    C.position.set(size*.7,size*.5,size*.9);K.target.set(0,0,0);K.minDistance=size*.2;K.maxDistance=size*4;K.autoRotate=true;K.update();
+    msg.style.display="none";
+  }catch(e){if(my===token)msg.textContent="Couldn't load "+m.file+". Check the file name and that it's in the models folder."}
+}
+window.view3D={
+  start(models,tabs){
+    if(!R)init();fit();run=true;cancelAnimationFrame(raf);loop();
+    tabs.innerHTML=models.length>1?models.map((m,i)=>`<button aria-pressed="${i===0}">${m.label}</button>`).join(""):"";
+    [...tabs.children].forEach((bt,i)=>bt.onclick=()=>{[...tabs.children].forEach((x,j)=>x.setAttribute("aria-pressed",j===i));load(models[i])});
+    load(models[0]);
+  },
+  stop(){run=false;cancelAnimationFrame(raf);token++}
+};
 </script>
 </body>
 </html>
