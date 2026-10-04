@@ -40,12 +40,12 @@ h2{font:700 clamp(28px,4vw,36px)/1.1 var(--head);margin:0 0 8px;letter-spacing:-
 .facts{background:var(--tealsoft);border-radius:22px;padding:24px;align-self:start}
 .facts h3{margin:0 0 10px;font:700 18px var(--head)}
 .facts ul{margin:0;padding-left:20px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
 .proj{all:unset;box-sizing:border-box;cursor:pointer;background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;transition:transform .2s,border-color .2s}
 .proj:hover{transform:translateY(-4px);border-color:var(--teal)}
 .proj:focus-visible{outline:3px solid var(--coral);outline-offset:3px}
-.thumb{aspect-ratio:16/10;background:#fff;border-bottom:1px solid var(--line);display:grid;place-items:center;overflow:hidden}
-.thumb img,.thumb video{width:100%;height:100%;object-fit:contain}
+.thumb{aspect-ratio:16/10;background:#fff;border-bottom:1px solid var(--line);display:grid;place-items:center;overflow:hidden;position:relative}
+.thumb img,.thumb video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
 .pbody{padding:16px 18px 20px}
 .pbody h3{margin:0 0 2px;font:700 20px/1.2 var(--head)}
 .when{font-size:14px;color:var(--muted);margin:0 0 8px}
@@ -123,7 +123,6 @@ dialog::backdrop{background:rgba(20,33,61,.55)}
         <li>Focus: biomechanics</li>
         <li>Co-Lead, ENABLE (UBC BEST)</li>
         <li>Mechanical Engineer, EWB ACCESS Venture</li>
-        <li>Top project, femoral fixation plate course</li>
       </ul>
     </aside>
   </div>
@@ -194,7 +193,7 @@ dialog::backdrop{background:rgba(20,33,61,.55)}
 <script>
 /* EDIT HERE. Projects run earliest to latest. Each "media" list holds file paths: photos and videos both go in this list, e.g. media:["images/a.png","images/demo.mp4"]. The first item is the card cover. */
 const projects=[
- {title:"Femoral Fracture Fixation Plate",when:"Sept to Nov 2025 · Biomechanics design course",tags:["Biomechanics","FEA","Top project"],award:1,
+ {title:"Femoral Fracture Fixation Plate",when:"Sept to Nov 2025 · Biomechanics design course",tags:["Biomechanics","FEA","Orthopedics"],
   short:"A C-shaped double plate that lets elderly patients bear full weight right after surgery.",
   media:["images/femoral-plate.png","images/femoral-fea.png","images/femoral-drawing.png"],
   problem:"Elderly femoral fractures are fixed with plates and screws, but standard fixation can limit early weight bearing, which slows recovery and raises the risk of complications.",
