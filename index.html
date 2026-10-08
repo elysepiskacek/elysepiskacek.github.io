@@ -101,6 +101,9 @@ dialog::backdrop{background:rgba(20,33,61,.55)}
 .strip button:hover{border-color:#9CCFCA}
 .strip button[aria-current=true]{border-color:var(--teal);box-shadow:0 0 0 2px var(--tealsoft)}
 .strip img{width:100%;height:100%;object-fit:cover}
+/* Rotated video: the rotated video is sized to fill the 16:9 box, with its own play button */
+#dmedia .rotv{position:absolute;top:50%;left:50%;width:100cqh;height:100cqw;inset:auto;transform:translate(-50%,-50%) rotate(var(--rot,90deg));object-fit:contain;background:#000;cursor:pointer}
+#dmedia .vp{position:absolute;left:12px;bottom:12px;z-index:2;cursor:pointer;font:600 14px var(--body);padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.93);color:var(--ink)}
 .dbody{padding:18px 28px 28px;overflow-y:auto;flex:1 1 auto;min-height:0}
 .dbody h3{font:800 28px var(--head);margin:0 0 4px}
 .dbody h4{font:700 16px var(--head);margin:18px 0 4px;color:var(--teal)}
@@ -224,11 +227,12 @@ dialog::backdrop{background:rgba(20,33,61,.55)}
    "models" = interactive 3D files (.stl or .glb) in the models/ folder, e.g. models:[{label:"Assembly",file:"models/part.stl"}].
    Several models = tabs inside the 3D viewer. All STL models are light grey (change the colour near the bottom of the file).
    Optional "flip" turns a model to fix its starting orientation, in degrees [x,y,z].
-   Example: flip:[180,0,0] turns it upside down. If that isn't right, try [0,0,180] or [0,180,0]. */
+   Example: flip:[180,0,0] turns it upside down. If that isn't right, try [0,0,180] or [0,180,0].
+   Optional "rotate" turns a video, e.g. rotate:{"images/demo.mp4":90}. Use 90, -90 (or 270), or 180. If it comes out upside down, switch 90 to -90. */
 const projects=[
  {title:"Femoral Fracture Fixation Plate",when:"Sept to Nov 2025 · Biomechanics design course",tags:["Biomechanics","FEA","Orthopedics"],
   short:"A C-shaped double plate that lets elderly patients bear full weight right after surgery.",
-  media:["images/femoral-plate.png","images/femoral-fea.png","images/femoral-drawing.png"],
+  media:["images/femoral-plate.png","images/femoral-fea.jpg","images/femoral-drawing.jpg"],
   models:[{label:"Fixation plate",file:"models/femoral-plate.stl"}],
   problem:"Elderly femoral fractures are fixed with plates and screws, but standard fixation can limit early weight bearing, which slows recovery and raises the risk of complications.",
   design:["C-shaped plate for minimally invasive double plating along the femur","Better load sharing across the fracture site","Higher stability with less disruption to surrounding tissue"],
@@ -250,6 +254,7 @@ const projects=[
  {title:"Neonatal Measuring Device",when:"May to Sept 2026 · BC Children's Hospital",tags:["Medical device","CAD","3D printing"],
   short:"A caliper-style device that measures infant length in an incubator without lifting the baby.",
   media:["images/nicu-prototype.jpg","images/nicu-top.jpg","images/nicu-demo.mp4"],
+  rotate:{"images/nicu-demo.mp4":90},
   models:[{label:"Measuring device",file:"models/nicu-device.stl"}],
   problem:"Measuring NICU infants on a length board means lifting and repositioning medically fragile babies. The hospital wanted fewer movements, accurate results, and a tool one clinician could use alone.",
   design:["Caliper-style mechanism that fits around the baby","Telescoping body, adjustable and compact to store","Guarded measuring tape with a safety latch","Weight-stabilized headrest; open surfaces for easy cleaning"],
@@ -269,7 +274,15 @@ function show(i){
   $("dmedia").hidden=is3d;$("d3d").hidden=!is3d;$("mtabs").hidden=!(is3d&&p.models.length>1);
   if(is3d){window.view3D&&window.view3D.start(p.models,$("mtabs"));}
   else{window.view3D&&window.view3D.stop();
-    $("dmedia").innerHTML=isVid(it)?`<video src="${it}" controls playsinline preload="metadata"></video>`:`<img src="${it}" alt="${p.title}, view ${i}">`;}
+    const rot=p.rotate&&p.rotate[it];
+    $("dmedia").style.containerType=rot?"size":"";
+    if(isVid(it)&&rot){
+      $("dmedia").innerHTML=`<video class="rotv" src="${it}" style="--rot:${rot}deg" playsinline loop preload="metadata"></video><button class="vp">▶ Play</button>`;
+      const v=$("dmedia").querySelector("video"),pb=$("dmedia").querySelector(".vp");
+      const tog=()=>{v.paused?v.play():v.pause()};
+      v.onclick=tog;pb.onclick=tog;
+      v.onplay=()=>pb.textContent="❚❚ Pause";v.onpause=()=>pb.textContent="▶ Play";
+    }else $("dmedia").innerHTML=isVid(it)?`<video src="${it}" controls playsinline preload="metadata"></video>`:`<img src="${it}" alt="${p.title}, view ${i}">`;}
   [...$("strip").children].forEach((b,j)=>{b.setAttribute("aria-current",j===i);if(j===i)b.scrollIntoView({block:"nearest",inline:"nearest"})});
 }
 projects.forEach(p=>{
