@@ -254,6 +254,36 @@ const projects=[
   problem:"Measuring NICU infants on a length board means lifting and repositioning medically fragile babies. The hospital wanted fewer movements, accurate results, and a tool one clinician could use alone.",
   design:["Caliper-style mechanism that fits around the baby","Telescoping body, adjustable and compact to store","Guarded measuring tape with a safety latch","Weight-stabilized headrest; open surfaces for easy cleaning"],
   outcome:"I 3D printed and assembled a physical prototype, which a BC Children's Hospital researcher is using in an ongoing study comparing infant measurement methods."}
+
+{
+  title:"Arduino-Based Retro Audio Player",
+  when:"Oct to Nov 2026 · Personal Project",
+  tags:["SolidWorks","Arduino","KiCad","3D Printing"],
+
+  short:"Designed and built a custom retro-style audio player with rotary-controlled playback, integrated electronics, and a multicolour 3D-printed enclosure.",
+
+  media:[
+    "images/radio-electronics.jpg",
+    "images/radio-kicad.png"
+  ],
+
+  models:[
+    {label:"Radio Enclosure",file:"models/radio-enclosure.stl"}
+  ],
+
+  problem:"Design and fabricate a compact, personalized audio player combining vintage aesthetics with intuitive controls and reliable audio playback.",
+
+  design:[
+    "Designed a custom enclosure in SolidWorks featuring a heart-shaped speaker grille, rotary dial, and removable back panel",
+    "Integrated an Arduino Uno R3, DFPlayer Mini, rotary encoder, and 8-ohm speaker",
+    "Created and verified an electronic circuit schematic using KiCad",
+    "Developed Arduino C++ firmware for rotary track selection, pause/resume functionality, and automatic interruption when switching recordings",
+    "Prototyped and tested the circuit on a breadboard before soldering the final electronics onto perfboard",
+    "Fabricated the enclosure using multicolour FDM 3D printing and assembled the mechanical and electrical components"
+  ],
+
+  outcome:"Successfully developed a functional USB-powered audio player featuring rotary-controlled playback and replaceable MP3 recordings stored on a microSD card."
+}
 ];
 const skills={"CAD and design":["SolidWorks","Onshape","Medical device design"],"Mechanical":["3D printing","Rapid prototyping","Finite element analysis","Soldering"],"Programming":["Python","MATLAB","Simulink","C / C++ / C#","Java","R","Arduino","GitHub"],"Instrumentation":["IMUs","Strain gauges","EMG","Wearable sensors","Oscilloscope","Spectrophotometer"]};
 const $=id=>document.getElementById(id),isVid=s=>/\.(mp4|webm|mov)$/i.test(s);
