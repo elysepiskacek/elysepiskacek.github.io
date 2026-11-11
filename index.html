@@ -285,74 +285,6 @@ nav a{font-size:14px}
 /* PROJECTS: Edit titles, images and models here. */
 const projects=[
 {
-title:"Femoral Fracture Fixation Plate",
-when:"Sept to Nov 2025 · Biomechanics design course",
-tags:["Biomechanics","FEA","Orthopedics"],
-short:"A C-shaped double plate that lets elderly patients bear full weight right after surgery.",
-media:["images/femoral-plate.png","images/femoral-fea.jpg","images/femoral-drawing.jpg"],
-models:[{label:"Fixation plate",file:"models/femoral-plate.stl"}],
-problem:"Elderly femoral fractures are fixed with plates and screws, but standard fixation can limit early weight bearing, which slows recovery and raises the risk of complications.",
-design:[
-"C-shaped plate for minimally invasive double plating along the femur",
-"Better load sharing across the fracture site",
-"Higher stability with less disruption to surrounding tissue"
-],
-outcome:"Finite element analysis showed the plate could support full weight-bearing loads. Selected as the top project in the course by VGH trauma surgeon Dr. Pierre Guy."
-},
-{
-title:"Finger Physio Stretching Device",
-when:"Sept 2025 to July 2026 · ENABLE, for Technology for Living",
-tags:["Assistive tech","Mechanisms","SolidWorks"],
-short:"A motorized device that stretches a client's fingers so he can do daily physio on his own.",
-media:["images/finger-iso.jpg","images/finger-top.jpg","images/finger-demo.mp4"],
-models:[{label:"Full assembly",file:"models/finger-assembly.stl"}],
-problem:"Our client has quadriplegia and needs daily manual stretching to prevent muscle atrophy and keep neural mapping to each finger. It currently needs a physiotherapist and can't be done independently.",
-design:[
-"Custom lofted hand platform modeled on the client's hand",
-"Finger platforms on U-joints for abduction, adduction, and transverse motion",
-"Worm gear for controlled vertical stretching",
-"Stepper-motor actuators linked through U-joints for smooth movement"
-],
-outcome:"Designed the full modular system in SolidWorks and built a single-finger prototype to test the up-and-down stretching motion."
-},
-{
-title:"HPV Urine Collection Device",
-when:"Nov 2025 to present · Engineers Without Borders, ACCESS",
-tags:["Global health","Prototyping","Silicone"],
-short:"A low-cost device that captures the first urine stream for HPV self-testing, fitted to female anatomy.",
-media:["images/hpv-print.jpg"],
-models:[
-{label:"Device",file:"models/hpv-device.stl",flip:[180,0,0]},
-{label:"Mold: top",file:"models/hpv-mold-top.stl"},
-{label:"Mold: bottom",file:"models/hpv-mold-bottom.stl"}
-],
-problem:"In parts of Sub-Saharan Africa, cervical cancer screening is limited by infrastructure. Urine-based HPV testing works best on the first stream, which many devices built for male anatomy miss.",
-design:[
-"Oval inlet that rests against the body and guides positioning",
-"Overflow outlet so the user doesn't need to stop mid-stream",
-"Internal ribbing that directs the first stream into the tube",
-"Fits a standard 50 mL Falcon tube",
-"Two-part mold (top and bottom) for casting the device in silicone"
-],
-outcome:"Built PLA and silicone prototypes and iterated the design using water-based tests of the collection mechanism."
-},
-{
-title:"Neonatal Measuring Device",
-when:"May to Sept 2026 · BC Children's Hospital",
-tags:["Medical device","CAD","3D printing"],
-short:"A caliper-style device that measures infant length in an incubator without lifting the baby.",
-media:["images/nicu-prototype.jpg","images/nicu-top.jpg","images/nicu-demo.mp4"],
-models:[{label:"Measuring device",file:"models/nicu-device.stl"}],
-problem:"Measuring NICU infants on a length board means lifting and repositioning medically fragile babies. The hospital wanted fewer movements, accurate results, and a tool one clinician could use alone.",
-design:[
-"Caliper-style mechanism that fits around the baby",
-"Telescoping body, adjustable and compact to store",
-"Guarded measuring tape with a safety latch",
-"Weight-stabilized headrest; open surfaces for easy cleaning"
-],
-outcome:"I 3D printed and assembled a physical prototype, which a BC Children's Hospital researcher is using in an ongoing study comparing infant measurement methods."
-},
-{
 title:"Arduino-Based Retro Audio Player",
 when:"Oct to Nov 2026 · Personal Project",
 tags:["SolidWorks","Arduino","KiCad","3D Printing"],
@@ -376,6 +308,74 @@ design:[
 "Fabricated the enclosure using multicolour FDM 3D printing and assembled the mechanical and electrical components"
 ],
 outcome:"Successfully developed a functional USB-powered audio player featuring rotary-controlled playback and replaceable MP3 recordings stored on a microSD card."
+},
+{
+title:"Finger Physio Stretching Device",
+when:"Sept 2025 to July 2026 · ENABLE, for Technology for Living",
+tags:["Assistive tech","Mechanisms","SolidWorks"],
+short:"A motorized device that stretches a client's fingers so he can do daily physio on his own.",
+media:["images/finger-iso.jpg","images/finger-top.jpg","images/finger-demo.mp4"],
+models:[{label:"Full assembly",file:"models/finger-assembly.stl"}],
+problem:"Our client has quadriplegia and needs daily manual stretching to prevent muscle atrophy and keep neural mapping to each finger. It currently needs a physiotherapist and can't be done independently.",
+design:[
+"Custom lofted hand platform modeled on the client's hand",
+"Finger platforms on U-joints for abduction, adduction, and transverse motion",
+"Worm gear for controlled vertical stretching",
+"Stepper-motor actuators linked through U-joints for smooth movement"
+],
+outcome:"Designed the full modular system in SolidWorks and built a single-finger prototype to test the up-and-down stretching motion."
+},
+{
+title:"Neonatal Measuring Device",
+when:"May to Sept 2026 · BC Children's Hospital",
+tags:["Medical device","CAD","3D printing"],
+short:"A caliper-style device that measures infant length in an incubator without lifting the baby.",
+media:["images/nicu-prototype.jpg","images/nicu-top.jpg","images/nicu-demo.mp4"],
+models:[{label:"Measuring device",file:"models/nicu-device.stl"}],
+problem:"Measuring NICU infants on a length board means lifting and repositioning medically fragile babies. The hospital wanted fewer movements, accurate results, and a tool one clinician could use alone.",
+design:[
+"Caliper-style mechanism that fits around the baby",
+"Telescoping body, adjustable and compact to store",
+"Guarded measuring tape with a safety latch",
+"Weight-stabilized headrest; open surfaces for easy cleaning"
+],
+outcome:"I 3D printed and assembled a physical prototype, which a BC Children's Hospital researcher is using in an ongoing study comparing infant measurement methods."
+},
+{
+title:"HPV Urine Collection Device",
+when:"Nov 2025 to June 2026 · Engineers Without Borders, ACCESS",
+tags:["Global health","Prototyping","Silicone"],
+short:"A low-cost device that captures the first urine stream for HPV self-testing, fitted to female anatomy.",
+media:["images/hpv-print.jpg"],
+models:[
+{label:"Device",file:"models/hpv-device.stl",flip:[180,0,0]},
+{label:"Mold: top",file:"models/hpv-mold-top.stl"},
+{label:"Mold: bottom",file:"models/hpv-mold-bottom.stl"}
+],
+problem:"In parts of Sub-Saharan Africa, cervical cancer screening is limited by infrastructure. Urine-based HPV testing works best on the first stream, which many devices built for male anatomy miss.",
+design:[
+"Oval inlet that rests against the body and guides positioning",
+"Overflow outlet so the user doesn't need to stop mid-stream",
+"Internal ribbing that directs the first stream into the tube",
+"Fits a standard 50 mL Falcon tube",
+"Two-part mold (top and bottom) for casting the device in silicone"
+],
+outcome:"Built PLA and silicone prototypes and iterated the design using water-based tests of the collection mechanism."
+},
+{
+title:"Femoral Fracture Fixation Plate",
+when:"Sept to Nov 2025 · Biomechanics design course",
+tags:["Biomechanics","FEA","Orthopedics"],
+short:"A C-shaped double plate that lets elderly patients bear full weight right after surgery.",
+media:["images/femoral-plate.png","images/femoral-fea.jpg","images/femoral-drawing.jpg"],
+models:[{label:"Fixation plate",file:"models/femoral-plate.stl"}],
+problem:"Elderly femoral fractures are fixed with plates and screws, but standard fixation can limit early weight bearing, which slows recovery and raises the risk of complications.",
+design:[
+"C-shaped plate for minimally invasive double plating along the femur",
+"Better load sharing across the fracture site",
+"Higher stability with less disruption to surrounding tissue"
+],
+outcome:"Finite element analysis showed the plate could support full weight-bearing loads. Selected as the top project in the course by VGH trauma surgeon Dr. Pierre Guy."
 }
 ];
 
